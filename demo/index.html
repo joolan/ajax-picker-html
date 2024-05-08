@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="screen-orientation" content="portrait">
+    <title>address</title>
+</head>
+
+<style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+  .input-wrapper {
+    margin: 20px auto auto 20px;
+  }
+  .desc {
+    color: #2599d2;
+    font-size: 18px;
+    margin-bottom: 7px;
+  }
+
+  .address-input {
+    width: 260px;
+    height: 30px;
+    background: #fff;
+    text-indent: 3px;
+    color: #333;
+    display: inline-block;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+</style>
+<body>
+<div class="input-wrapper">
+  <div class="desc">选择地址</div>
+  <input type="text" disabled class="address-input"  value="/上海/珠海/上海区"  id="address-input" placeholder="">
+</div>
+
+<div id="container66">
+</div>
+
+<script src="./address.js"></script>
+<script src="./ajax-picker.min.js"></script>
+
+<script>
+  var picker = new AjaxPicker({
+    title: '请选择地址',
+    tipText: ['省份', '城市', '区/县','街道','level4','level5','level6','level7'],
+
+	//tipText: ['省份', '城市', '区/县','街道','五级地区'],
+    input: 'address-input',
+    container: 'container66',
+	endpoint:0,
+    renderArr: [
+      function () {
+	  //可以从接口获取省份; 一级地址必须有
+        picker.render(province)
+		//console.log('用户在列表1 s省份选择了 ' + JSON.stringify(picker.result1))
+		
+      } ,
+      function () {
+        console.log('用户在列表1选择了 ' + JSON.stringify(picker.result1))
+		//可以从接口获取city
+
+		if (city.length==0 || picker.result1.value=='北京'){ // 如果是北京，模拟没有下级地址
+			picker.render([])// 如果本层级渲染的是空数据，会自动选择结束
+		}else{
+			picker.render(city)// 如果本层级渲染的有数据，会自动展示选择列表供人选择
+		}
+      },
+      function () {
+        console.log('用户在列表2选择了 ' + JSON.stringify(picker.result2))
+
+		if (district.length==0|| picker.result2.value=='广州'){
+			picker.render([])
+		}else{
+			picker.render(district)
+		}
+      },
+      function () {
+        console.log('用户在列表3选择了 ' + JSON.stringify(picker.result3))
+
+		//如果赋值选择列表是空，需要清除下一级选择 并选中上一级
+		if (country.length==0 ||  picker.result3.value=='越秀区'){
+			picker.render([])
+		}else{
+			picker.render(country)
+		}
+      },
+      function () {
+        console.log('用户在列表4选择了 ' + JSON.stringify(picker.result4))
+
+		//如果赋值选择列表是空，需要清除下一级选择 并选中上一级
+		if (country.length==0 ||  picker.result4.value=='越秀区'){
+			picker.render([])
+		}else{
+			picker.render(country)
+		}
+      }
+    ],
+    success: function (arr) {
+      console.log('地址选择成功：'+JSON.stringify(arr))
+
+      var address = ''
+      for (var i = 0; i < arr.length; i++) {
+        address +=  ' / ' + arr[i].value
+      }
+      document.getElementById('address-input').value = address.substring(1)
+    }
+  })
+</script>
+</body>
+</html>
